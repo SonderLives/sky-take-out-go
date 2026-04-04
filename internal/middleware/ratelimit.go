@@ -3,10 +3,10 @@ package middleware
 import (
 	"time"
 
-	"goflow/internal/pkg/errcode"
-	"goflow/internal/pkg/logger"
-	"goflow/internal/pkg/ratelimit"
-	"goflow/internal/pkg/response"
+	"sky-take-out-go/internal/pkg/errcode"
+	"sky-take-out-go/internal/pkg/logger"
+	"sky-take-out-go/internal/pkg/ratelimit"
+	"sky-take-out-go/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )

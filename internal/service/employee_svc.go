@@ -5,35 +5,35 @@ import (
 	"errors"
 	"time"
 
-	"goflow/internal/config"
-	"goflow/internal/middleware"
-	"goflow/internal/model"
-	"goflow/internal/pkg/errcode"
-	"goflow/internal/pkg/response"
-	"goflow/internal/repository"
+	"sky-take-out-go/internal/config"
+	"sky-take-out-go/internal/middleware"
+	"sky-take-out-go/internal/model"
+	"sky-take-out-go/internal/pkg/errcode"
+	"sky-take-out-go/internal/pkg/response"
+	"sky-take-out-go/internal/repository"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-type AdminService interface {
+type EmployeeService interface {
 	CreateAdmin(ctx context.Context, username, password, nickname, role string) error
-	Login(ctx context.Context, username, password string) (*response.LoginResult, error)
+	Login(ctx context.Context, username, password string) (*response.EmployeeLoginResult, error)
 }
 
-type adminService struct {
-	repo      repository.AdminRepository
+type employeeService struct {
+	repo      repository.EmployeeRepository
 	jwtSecret []byte
 	jwtExpire time.Duration
 }
 
-func NewAdminService(repo repository.AdminRepository, cfg *config.Config) AdminService {
+func NewEmployeeService(repo repository.EmployeeRepository, cfg *config.Config) EmployeeService {
 	jwtExpire := cfg.JWT.Expire
 	if jwtExpire <= 0 {
 		jwtExpire = 7200
 	}
-	return &adminService{
+	return &employeeService{
 		repo:      repo,
 		jwtSecret: []byte(cfg.JWT.Secret),
 		jwtExpire: time.Duration(jwtExpire) * time.Second,
@@ -41,42 +41,39 @@ func NewAdminService(repo repository.AdminRepository, cfg *config.Config) AdminS
 }
 
 // CreateAdmin 创建管理员
-func (s *adminService) CreateAdmin(ctx context.Context, username, password, nickname, role string) error {
+func (s *employeeService) CreateAdmin(ctx context.Context, username, password, nickname, role string) error {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return errcode.ErrInternal()
 	}
-	return s.repo.Create(ctx, &model.Admin{
+	return s.repo.Create(ctx, &model.Employee{
 		Username: username,
 		Password: string(hashed),
-		Nickname: nickname,
-		Role:     role,
 		Status:   1,
 	})
 }
 
-// Login 管理员登录
-func (s *adminService) Login(ctx context.Context, username, password string) (*response.LoginResult, error) {
-	admin, err := s.repo.GetByUsername(ctx, username)
+// Login 员工登录
+func (s *employeeService) Login(ctx context.Context, username, password string) (*response.EmployeeLoginResult, error) {
+	employee, err := s.repo.GetByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errcode.ErrAdminOrPassword()
+			return nil, errcode.ErrUserNotFound()
 		}
 		return nil, errcode.ErrInternal()
 	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(employee.Password), []byte(password)); err != nil {
 		return nil, errcode.ErrAdminOrPassword()
 	}
 
-	if admin.Status != 1 {
+	if employee.Status != 1 {
 		return nil, errcode.ErrAdminDisabled()
 	}
 
 	expireAt := time.Now().Add(s.jwtExpire)
 	claims := middleware.CustomClaims{
-		UserID:   admin.ID,
-		Username: admin.Username,
+		UserID:   employee.ID,
+		Username: employee.Username,
 		Role:     middleware.RoleAdmin,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expireAt),
@@ -89,15 +86,10 @@ func (s *adminService) Login(ctx context.Context, username, password string) (*r
 		return nil, errcode.ErrInternal()
 	}
 
-	return &response.LoginResult{
+	return &response.EmployeeLoginResult{
 		Token:    tokenStr,
-		ExpireAt: expireAt.Unix(),
-		User: response.AdminInfo{
-			ID:       admin.ID,
-			Username: admin.Username,
-			Nickname: admin.Nickname,
-			Avatar:   admin.Avatar,
-			Role:     admin.Role,
-		},
+		ID:       employee.ID,
+		Name:     employee.Name,
+		UserName: employee.Username,
 	}, nil
 }

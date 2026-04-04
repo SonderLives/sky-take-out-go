@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-
 	"sky-take-out-go/internal/pkg/errcode"
 	"sky-take-out-go/internal/pkg/i18n"
 	"sky-take-out-go/internal/pkg/req"
@@ -13,27 +12,35 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type userLoginService interface {
+type employeeLoginService interface {
 	Login(ctx context.Context, username, password string) (*response.EmployeeLoginResult, error)
 }
 
-type UserHandler struct {
-	userSvc userLoginService
+type EmployeeHandler struct {
+	employeeSvc employeeLoginService
 }
 
-func NewUserHandler(userSvc userLoginService) *UserHandler {
-	return &UserHandler{userSvc: userSvc}
+func NewEmployeeHandler(adminSvc employeeLoginService) *EmployeeHandler {
+	return &EmployeeHandler{employeeSvc: adminSvc}
 }
 
-// Login 用户登录
-func (h *UserHandler) Login(c *gin.Context) {
-	var r req.LoginReq
+// Login godoc
+// @Summary      员工登录
+// @Description  通过用户名和密码登录
+// @Tags         员工
+// @Accept       json
+// @Produce      json
+// @Param        body  body  req.EmployeeLoginReq  true  "登录凭证"
+// @Success      200   {object}  response.Response  "登录成功"
+// @Router       /admin/employee/login [post]
+func (h *EmployeeHandler) Login(c *gin.Context) {
+	var r req.EmployeeLoginReq
 	if err := c.ShouldBindJSON(&r); err != nil {
 		response.ErrorWithMsg(c, 400, errcode.CodeBadRequest, validator.Translate(err, i18n.GetLang(c)))
 		return
 	}
 
-	result, err := h.userSvc.Login(c.Request.Context(), r.Username, r.Password)
+	result, err := h.employeeSvc.Login(c.Request.Context(), r.Username, r.Password)
 	if err != nil {
 		var appErr *errcode.AppError
 		if errors.As(err, &appErr) {

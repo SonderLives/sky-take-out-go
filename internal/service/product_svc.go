@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
-	"goflow/internal/model"
-	"goflow/internal/pkg/errcode"
-	"goflow/internal/pkg/logger"
-	"goflow/internal/repository"
+	"sky-take-out-go/internal/model"
+	"sky-take-out-go/internal/pkg/errcode"
+	"sky-take-out-go/internal/pkg/logger"
+	"sky-take-out-go/internal/repository"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"

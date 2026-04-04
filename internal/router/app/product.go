@@ -1,7 +1,7 @@
 package app
 
 import (
-	"goflow/internal/handler"
+	"sky-take-out-go/internal/handler"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,12 +1,12 @@
-.PHONY: build run clean migrate
+.PHONY: build run clean migrate docs
 
 # 构建
 build:
-	go build -o bin/server cmd/server/main.go
+	go build -o bin/server cmd/server/main.go cmd/server/app.go
 
 # 运行
 run:
-	go run cmd/server/main.go
+	go run cmd/server/main.go cmd/server/app.go
 
 # 清理
 clean:
@@ -23,3 +23,7 @@ vet:
 # 下载依赖
 tidy:
 	go mod tidy
+
+# 生成 Swagger 文档
+docs:
+	swag init -g main.go -d cmd/server,internal/handler,internal/pkg/req,internal/pkg/response -o cmd/server/docs

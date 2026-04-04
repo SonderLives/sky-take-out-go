@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"goflow/internal/pkg/logger"
+	"sky-take-out-go/internal/pkg/logger"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 )

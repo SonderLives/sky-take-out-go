@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"goflow/internal/pkg/errcode"
-	"goflow/internal/pkg/response"
+	"sky-take-out-go/internal/pkg/errcode"
+	"sky-take-out-go/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

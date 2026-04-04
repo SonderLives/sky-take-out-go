@@ -5,10 +5,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"goflow/internal/database"
-	"goflow/internal/pkg/logger"
+	_ "sky-take-out-go/cmd/server/docs"
+	"sky-take-out-go/internal/database"
+	"sky-take-out-go/internal/pkg/logger"
 )
 
+// @title           Take Out API
+// @version         1.0
 func main() {
 	// 1. InitAll 函数初始化所有资源
 	cfg, db, rdb, mqPublisher, _, r, mqRouter, err := InitAll()

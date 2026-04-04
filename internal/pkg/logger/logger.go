@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"goflow/internal/config"
+	"sky-take-out-go/internal/config"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -121,7 +121,7 @@ func Init(cfg *config.LogConfig) {
 		))
 	}
 
-	zapLog := zap.New(zapcore.NewTee(cores...), zap.AddCaller(), zap.AddCallerSkip(1))
+	zapLog := zap.New(zapcore.NewTee(cores...), zap.AddCaller(), zap.AddCallerSkip(0))
 	RawLog = zapLog
 	Log = zapLog.Sugar()
 }

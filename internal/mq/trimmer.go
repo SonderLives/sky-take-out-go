@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"goflow/internal/config"
-	"goflow/internal/pkg/logger"
+	"sky-take-out-go/internal/config"
+	"sky-take-out-go/internal/pkg/logger"
 
 	"github.com/redis/go-redis/v9"
 )

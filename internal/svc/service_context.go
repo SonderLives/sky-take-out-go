@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"goflow/internal/config"
-	"goflow/internal/mq"
-	"goflow/internal/pkg/ratelimit"
-	"goflow/internal/repository"
-	"goflow/internal/service"
+	"sky-take-out-go/internal/config"
+	"sky-take-out-go/internal/mq"
+	"sky-take-out-go/internal/pkg/ratelimit"
+	"sky-take-out-go/internal/repository"
+	"sky-take-out-go/internal/service"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -20,9 +20,9 @@ type ServiceContext struct {
 	Config *config.Config
 
 	// Service 层（导出，供 handler 使用）
-	ProductSvc service.ProductService
-	UserSvc    service.UserService
-	AdminSvc   service.AdminService
+	ProductSvc  service.ProductService
+	UserSvc     service.UserService
+	EmployeeSvc service.EmployeeService
 
 	// 限流器
 	RateLimiter *ratelimit.RateLimiter
@@ -41,12 +41,12 @@ func NewServiceContext(cfg *config.Config, db *gorm.DB, rdb *redis.Client, mqPub
 	// Repository
 	productRepo := repository.NewProductRepo(db)
 	userRepo := repository.NewUserRepo(db)
-	adminRepo := repository.NewAdminRepo(db)
+	employeeRepo := repository.NewEmployeeRepo(db)
 
 	// Service
 	productSvc := service.NewProductService(productRepo, rdb, cfg.Server.CacheExpire)
 	userSvc := service.NewUserService(userRepo, cfg)
-	adminSvc := service.NewAdminService(adminRepo, cfg)
+	employeeService := service.NewEmployeeService(employeeRepo, cfg)
 
 	// 限流器
 	rl := ratelimit.NewRateLimiter(rdb)
@@ -57,9 +57,9 @@ func NewServiceContext(cfg *config.Config, db *gorm.DB, rdb *redis.Client, mqPub
 		db:    db,
 		redis: rdb,
 
-		ProductSvc: productSvc,
-		UserSvc:    userSvc,
-		AdminSvc:   adminSvc,
+		ProductSvc:  productSvc,
+		UserSvc:     userSvc,
+		EmployeeSvc: employeeService,
 
 		RateLimiter: rl,
 

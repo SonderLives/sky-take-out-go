@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"goflow/internal/pkg/i18n"
+	"sky-take-out-go/internal/pkg/i18n"
 
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/en"

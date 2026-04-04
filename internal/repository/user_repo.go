@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"goflow/internal/model"
+	"sky-take-out-go/internal/model"
 
 	"gorm.io/gorm"
 )

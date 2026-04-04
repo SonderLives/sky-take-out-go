@@ -2,24 +2,29 @@ package response
 
 import (
 	"fmt"
-	"goflow/internal/pkg/errcode"
-	"goflow/internal/pkg/i18n"
 	"net/http"
+	"sky-take-out-go/internal/pkg/errcode"
+	"sky-take-out-go/internal/pkg/i18n"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Response 统一响应结构
 type Response struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
+	//编码：1成功，0和其它数字为失败
+	Code int `json:"code" example:"1"`
+
+	//错误信息
+	Message string `json:"msg" example:"success"`
+
+	// 数据
+	Data any `json:"data,omitempty" swaggertype:"object"`
 }
 
 // Success 成功响应
 func Success(c *gin.Context, data any) {
 	c.JSON(http.StatusOK, Response{
-		Code:    0,
+		Code:    1,
 		Message: "success",
 		Data:    data,
 	})
@@ -28,7 +33,7 @@ func Success(c *gin.Context, data any) {
 // SuccessWithMsg 成功响应（自定义消息）
 func SuccessWithMsg(c *gin.Context, msg string, data any) {
 	c.JSON(http.StatusOK, Response{
-		Code:    0,
+		Code:    1,
 		Message: msg,
 		Data:    data,
 	})
@@ -64,10 +69,10 @@ func ErrorWithMsg(c *gin.Context, httpStatus int, code int, msg string) {
 
 // PageData 分页数据
 type PageData struct {
-	List  any   `json:"list"`
-	Total int64 `json:"total"`
-	Page  int   `json:"page"`
-	Size  int   `json:"size"`
+	List  any   `json:"list" swaggertype:"array,object"`
+	Total int64 `json:"total" example:"120"`
+	Page  int   `json:"page" example:"1"`
+	Size  int   `json:"size" example:"10"`
 }
 
 // SuccessWithPage 分页成功响应

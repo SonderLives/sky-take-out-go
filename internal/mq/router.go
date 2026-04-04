@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"goflow/internal/config"
+	"sky-take-out-go/internal/config"
 
 	"github.com/ThreeDotsLabs/watermill-redisstream/pkg/redisstream"
 	watermillsql "github.com/ThreeDotsLabs/watermill-sql/v2/pkg/sql"

@@ -8,8 +8,8 @@ import (
 
 // BaseModel 公共模型字段
 type BaseModel struct {
-	ID        uint           `json:"id" gorm:"primaryKey"`
+	ID        int64          `json:"id" gorm:"primaryKey"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }

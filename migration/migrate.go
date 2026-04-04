@@ -3,8 +3,8 @@ package migration
 import (
 	"fmt"
 
-	"goflow/internal/model"
-	"goflow/internal/pkg/logger"
+	"sky-take-out-go/internal/model"
+	"sky-take-out-go/internal/pkg/logger"
 
 	"gorm.io/gorm"
 )
@@ -13,7 +13,7 @@ import (
 func AutoMigrate(db *gorm.DB) error {
 	err := db.AutoMigrate(
 		&model.User{},
-		&model.Admin{},
+		&model.Employee{},
 		&model.Product{},
 	)
 	if err != nil {

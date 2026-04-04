@@ -35,6 +35,7 @@ const (
 	CodeUserDisabled    = 20002
 	CodeAdminOrPassword = 20003
 	CodeAdminDisabled   = 20004
+	CodeAdminNotFound   = 20005
 
 	CodeProductNotFound = 20101
 	CodeProductOffShelf = 20102
@@ -45,57 +46,61 @@ const (
 // 每次调用返回新实例，避免全局指针被意外修改
 
 func ErrBadRequest() *AppError {
-	return &AppError{Code: CodeBadRequest, Message: "请求参数错误", httpStatus: 400}
+	return &AppError{Code: CodeBadRequest, Message: "请求参数错误", httpStatus: 200}
 }
 
 func ErrUnauthorized() *AppError {
-	return &AppError{Code: CodeUnauthorized, Message: "未授权", httpStatus: 401}
+	return &AppError{Code: CodeUnauthorized, Message: "未授权", httpStatus: 200}
 }
 
 func ErrForbidden() *AppError {
-	return &AppError{Code: CodeForbidden, Message: "禁止访问", httpStatus: 403}
+	return &AppError{Code: CodeForbidden, Message: "禁止访问", httpStatus: 200}
 }
 
 func ErrNotFound() *AppError {
-	return &AppError{Code: CodeNotFound, Message: "资源不存在", httpStatus: 404}
+	return &AppError{Code: CodeNotFound, Message: "资源不存在", httpStatus: 200}
 }
 
 func ErrInternal() *AppError {
-	return &AppError{Code: CodeInternal, Message: "服务器内部错误", httpStatus: 500}
+	return &AppError{Code: CodeInternal, Message: "服务器内部错误", httpStatus: 200}
 }
 
 func ErrTooManyRequests() *AppError {
-	return &AppError{Code: CodeTooManyRequests, Message: "请求过于频繁", httpStatus: 429}
+	return &AppError{Code: CodeTooManyRequests, Message: "请求过于频繁", httpStatus: 200}
 }
 
 // 用户错误码 20001-20099
 
 func ErrUserOrPassword() *AppError {
-	return &AppError{Code: CodeUserOrPassword, Message: "用户名或密码错误", httpStatus: 401}
+	return &AppError{Code: CodeUserOrPassword, Message: "用户名或密码错误", httpStatus: 200}
 }
 
 func ErrUserDisabled() *AppError {
-	return &AppError{Code: CodeUserDisabled, Message: "用户已被禁用", httpStatus: 403}
+	return &AppError{Code: CodeUserDisabled, Message: "用户已被禁用", httpStatus: 200}
 }
 
 func ErrAdminOrPassword() *AppError {
-	return &AppError{Code: CodeAdminOrPassword, Message: "管理员账号或密码错误", httpStatus: 401}
+	return &AppError{Code: CodeAdminOrPassword, Message: "管理员账号或密码错误", httpStatus: 200}
 }
 
 func ErrAdminDisabled() *AppError {
-	return &AppError{Code: CodeAdminDisabled, Message: "管理员账号已被禁用", httpStatus: 403}
+	return &AppError{Code: CodeAdminDisabled, Message: "管理员账号已被禁用", httpStatus: 200}
+}
+
+func ErrUserNotFound() *AppError {
+	return &AppError{Code: CodeAdminNotFound, Message: "管理员不存在", httpStatus: 200}
 }
 
 // 商品错误码 20101-20199
 
 func ErrProductNotFound() *AppError {
-	return &AppError{Code: CodeProductNotFound, Message: "商品不存在", httpStatus: 404}
+	return &AppError{Code: CodeProductNotFound, Message: "商品不存在", httpStatus: 200}
 }
 
 func ErrProductOffShelf() *AppError {
-	return &AppError{Code: CodeProductOffShelf, Message: "商品已下架", httpStatus: 400}
+	return &AppError{Code: CodeProductOffShelf, Message: "商品已下架", httpStatus: 200}
 }
 
 func ErrStockNotEnough() *AppError {
-	return &AppError{Code: CodeStockNotEnough, Message: "库存不足", httpStatus: 400}
+	return &AppError{Code: CodeStockNotEnough, Message: "库存不足", httpStatus: 200}
 }

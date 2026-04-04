@@ -19,7 +19,7 @@ const (
 
 // CustomClaims 自定义 JWT Claims，更类型安全
 type CustomClaims struct {
-	UserID   uint   `json:"user_id"`
+	UserID   int64  `json:"user_id"`
 	Username string `json:"username"`
 	Role     Role   `json:"role"`
 	jwt.RegisteredClaims

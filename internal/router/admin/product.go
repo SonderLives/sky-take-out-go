@@ -1,9 +1,9 @@
 package admin
 
 import (
-	"goflow/internal/handler"
-	"goflow/internal/middleware"
-	"goflow/internal/pkg/ratelimit"
+	"sky-take-out-go/internal/handler"
+	"sky-take-out-go/internal/middleware"
+	"sky-take-out-go/internal/pkg/ratelimit"
 	"time"
 
 	"github.com/gin-gonic/gin"

@@ -5,14 +5,16 @@ import (
 	"net/http"
 	"time"
 
-	"goflow/internal/handler"
-	"goflow/internal/middleware"
-	"goflow/internal/pkg/response"
-	"goflow/internal/router/admin"
-	"goflow/internal/router/app"
-	"goflow/internal/svc"
+	"sky-take-out-go/internal/handler"
+	"sky-take-out-go/internal/middleware"
+	"sky-take-out-go/internal/pkg/response"
+	"sky-take-out-go/internal/router/admin"
+	"sky-take-out-go/internal/router/app"
+	"sky-take-out-go/internal/svc"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Setup 接收 ServiceContext，内部创建所有 handler 并注册路由。
@@ -26,6 +28,10 @@ func Setup(svcCtx *svc.ServiceContext, auth *middleware.AuthMiddleware) *gin.Eng
 	r.Use(middleware.Logger())
 	r.Use(middleware.Recovery())
 	r.Use(middleware.CORS(svcCtx.Config.Server.CORSOrigins))
+
+	if svcCtx.Config.Server.Mode == "debug" {
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	// 健康检查：检测 MySQL 和 Redis 的真实连通性
 	r.GET("/health", func(c *gin.Context) {
@@ -45,7 +51,7 @@ func Setup(svcCtx *svc.ServiceContext, auth *middleware.AuthMiddleware) *gin.Eng
 	// 创建 handler（从 ServiceContext 获取依赖）
 	productHandler := handler.NewProductHandler(svcCtx.ProductSvc, svcCtx.MQPublisher)
 	userHandler := handler.NewUserHandler(svcCtx.UserSvc)
-	adminHandler := handler.NewAdminHandler(svcCtx.AdminSvc)
+	employeeHandler := handler.NewEmployeeHandler(svcCtx.EmployeeSvc)
 
 	// App 客户端接口
 	appGroup := r.Group("/app/v1")
@@ -61,8 +67,8 @@ func Setup(svcCtx *svc.ServiceContext, auth *middleware.AuthMiddleware) *gin.Eng
 	// 后续扩展 App 需认证的接口
 
 	// 管理后台接口
-	adminGroup := r.Group("/admin/v1")
-	admin.RegisterAuthRoutes(adminGroup, adminHandler)
+	adminGroup := r.Group("/admin/")
+	admin.RegisterAuthRoutes(adminGroup, employeeHandler)
 
 	// 管理后台全部需认证
 	adminAuth := adminGroup.Group("")

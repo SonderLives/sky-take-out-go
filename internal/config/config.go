@@ -100,7 +100,7 @@ func Load() (*Config, error) {
 	v := viper.New()
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
-	v.AddConfigPath("./config")
+	v.AddConfigPath(".")
 
 	if err := v.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("read config failed: %w", err)

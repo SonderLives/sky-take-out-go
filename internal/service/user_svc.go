@@ -5,12 +5,12 @@ import (
 	"errors"
 	"time"
 
-	"goflow/internal/config"
-	"goflow/internal/middleware"
-	"goflow/internal/model"
-	"goflow/internal/pkg/errcode"
-	"goflow/internal/pkg/response"
-	"goflow/internal/repository"
+	"sky-take-out-go/internal/config"
+	"sky-take-out-go/internal/middleware"
+	"sky-take-out-go/internal/model"
+	"sky-take-out-go/internal/pkg/errcode"
+	"sky-take-out-go/internal/pkg/response"
+	"sky-take-out-go/internal/repository"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -19,7 +19,7 @@ import (
 
 type UserService interface {
 	CreateUser(ctx context.Context, username, password, nickname string) error
-	Login(ctx context.Context, username, password string) (*response.LoginResult, error)
+	Login(ctx context.Context, username, password string) (*response.EmployeeLoginResult, error)
 }
 
 type userService struct {
@@ -54,7 +54,7 @@ func (s *userService) CreateUser(ctx context.Context, username, password, nickna
 	})
 }
 
-func (s *userService) Login(ctx context.Context, username, password string) (*response.LoginResult, error) {
+func (s *userService) Login(ctx context.Context, username, password string) (*response.EmployeeLoginResult, error) {
 	user, err := s.repo.GetByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -90,14 +90,7 @@ func (s *userService) Login(ctx context.Context, username, password string) (*re
 		return nil, errcode.ErrInternal()
 	}
 
-	return &response.LoginResult{
-		Token:    tokenStr,
-		ExpireAt: expireAt.Unix(),
-		User: response.UserInfo{
-			ID:       user.ID,
-			Username: user.Username,
-			Nickname: user.Nickname,
-			Avatar:   user.Avatar,
-		},
+	return &response.EmployeeLoginResult{
+		Token: tokenStr,
 	}, nil
 }

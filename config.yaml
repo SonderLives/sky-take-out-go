@@ -10,7 +10,7 @@ mysql:
   port: 3306
   username: root
   password: "0000"
-  database: silk_route
+  database: sky_take_out
   max_idle_conns: 10
   max_open_conns: 100
   max_lifetime: 3600        # 连接最大存活时间(秒)
@@ -24,7 +24,7 @@ mysql:
 
 mq:
   driver: redis          # redis 或 mysql
-  consumer_group: goflow-group
+  consumer_group: sky-take-out-go-group
   topic_concurrency:     # 按 topic 单独配置，未配置默认 1
     email: 3
     sms: 1
