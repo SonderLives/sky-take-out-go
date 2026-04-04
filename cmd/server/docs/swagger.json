@@ -1,0 +1,82 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Take Out API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/admin/employee/login": {
+            "post": {
+                "description": "通过用户名和密码登录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "员工"
+                ],
+                "summary": "员工登录",
+                "parameters": [
+                    {
+                        "description": "登录凭证",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.EmployeeLoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登录成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "req.EmployeeLoginReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
+        "response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "编码：1成功，0和其它数字为失败",
+                    "type": "integer",
+                    "example": 1
+                },
+                "data": {
+                    "description": "数据",
+                    "type": "object"
+                },
+                "msg": {
+                    "description": "错误信息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        }
+    }
+}

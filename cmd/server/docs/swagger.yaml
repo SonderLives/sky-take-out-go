@@ -1,0 +1,55 @@
+definitions:
+  req.EmployeeLoginReq:
+    properties:
+      password:
+        example: "123456"
+        type: string
+      username:
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  response.Response:
+    properties:
+      code:
+        description: 编码：1成功，0和其它数字为失败
+        example: 1
+        type: integer
+      data:
+        description: 数据
+        type: object
+      msg:
+        description: 错误信息
+        example: success
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Take Out API
+  version: "1.0"
+paths:
+  /admin/employee/login:
+    post:
+      consumes:
+      - application/json
+      description: 通过用户名和密码登录
+      parameters:
+      - description: 登录凭证
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/req.EmployeeLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 员工登录
+      tags:
+      - 员工
+swagger: "2.0"
