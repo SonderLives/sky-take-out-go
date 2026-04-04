@@ -1,15 +1,15 @@
 server:
   port: 8080
-  mode: release # debug / release
+  mode: debug # debug / release
   read_timeout: 10
   write_timeout: 10
   auto_migrate: false
 
 mysql:
-  host: 127.0.0.1
+  host: 192.168.200.129
   port: 3306
   username: root
-  password: ""
+  password: "0000"
   database: silk_route
   max_idle_conns: 10
   max_open_conns: 100
@@ -37,8 +37,8 @@ mq:
   trim_interval: 3600      # 定期 XTRIM 间隔（秒），0 为不启用
 
 redis:
-  addr: 127.0.0.1:6379
-  password: ""
+  addr: 192.168.200.129:6379
+  password: "0000"
   db: 2
   pool_size: 100
   min_idle_conns: 10        # 最小空闲连接数
@@ -55,11 +55,11 @@ redis:
   max_retry_backoff: 512    # 最大重试退避时间(毫秒)
 
 jwt:
-  secret: "goflow-secret-key-change-me"
+  secret: "my-secret-key"
   expire: 7200 # seconds
 
 log:
-  mode: prod # dev / prod
+  mode: dev # dev / prod
   level: info
   sql_level: warn
   log_dir: logs            # 日志目录；warn.log / error.log 写入此目录，空则只输出控制台
