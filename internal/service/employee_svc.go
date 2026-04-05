@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"sky-take-out-go/internal/pkg/req"
 	"time"
 
 	"sky-take-out-go/internal/config"
@@ -17,8 +18,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const defaultEmployeePassword = "123456"
+
 type EmployeeService interface {
-	CreateAdmin(ctx context.Context, username, password, nickname, role string) error
+	Create(ctx context.Context, r *req.EmployeeCreateReq) error
 	Login(ctx context.Context, username, password string) (*response.EmployeeLoginResult, error)
 }
 
@@ -40,17 +43,42 @@ func NewEmployeeService(repo repository.EmployeeRepository, cfg *config.Config) 
 	}
 }
 
-// CreateAdmin 创建管理员
-func (s *employeeService) CreateAdmin(ctx context.Context, username, password, nickname, role string) error {
-	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+// Create 创建员工
+func (s *employeeService) Create(ctx context.Context, r *req.EmployeeCreateReq) error {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(defaultEmployeePassword), bcrypt.DefaultCost)
 	if err != nil {
 		return errcode.ErrInternal()
 	}
-	return s.repo.Create(ctx, &model.Employee{
-		Username: username,
-		Password: string(hashed),
-		Status:   1,
-	})
+
+	// 安全断言，避免 claims 为 nil 时 panic
+	claims, ok := ctx.Value(string(middleware.ContextKeyClaims)).(*middleware.CustomClaims)
+	if !ok || claims == nil {
+		return errcode.ErrInternal()
+	}
+
+	now := time.Now()
+	employee := &model.Employee{
+		Username:   r.Username,
+		Name:       r.Name,
+		Password:   string(hashed),
+		Phone:      r.Phone,
+		Sex:        r.Sex,
+		IDNumber:   r.IDNumber,
+		Status:     model.EmployeeStatusEnabled,
+		CreateTime: now,
+		UpdateTime: now,
+		CreateUser: claims.UserID,
+		UpdateUser: claims.UserID,
+	}
+
+	if err := s.repo.Create(ctx, employee); err != nil {
+		var appErr *errcode.AppError
+		if errors.As(err, &appErr) {
+			return appErr
+		}
+		return errcode.ErrInternal()
+	}
+	return nil
 }
 
 // Login 员工登录
@@ -66,7 +94,7 @@ func (s *employeeService) Login(ctx context.Context, username, password string) 
 		return nil, errcode.ErrAdminOrPassword()
 	}
 
-	if employee.Status != 1 {
+	if employee.Status == model.EmployeeStatusDisabled {
 		return nil, errcode.ErrAdminDisabled()
 	}
 

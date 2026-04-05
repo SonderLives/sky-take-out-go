@@ -1,4 +1,40 @@
 definitions:
+  req.EmployeeCreateReq:
+    properties:
+      id:
+        description: ID 字段为自增且后端生成
+        example: 1
+        type: integer
+      idNumber:
+        description: 身份证号：必填 + 18位 + 基础正则（支持末尾X/x）
+        example: "110105199003078888"
+        type: string
+      name:
+        example: 张三
+        type: string
+      phone:
+        description: 手机号：必填 + 11位 + 大陆手机号正则
+        example: "13800000000"
+        type: string
+      sex:
+        description: 性别：限制枚举值
+        enum:
+        - 男
+        - 女
+        example: 男
+        type: string
+      username:
+        description: 用户名：必填，唯一
+        example: admin
+        type: string
+    required:
+    - id
+    - idNumber
+    - name
+    - phone
+    - sex
+    - username
+    type: object
   req.EmployeeLoginReq:
     properties:
       password:
@@ -27,9 +63,31 @@ definitions:
     type: object
 info:
   contact: {}
-  title: Take Out API
+  title: 苍穹外卖
   version: "1.0"
 paths:
+  /admin/employee:
+    post:
+      consumes:
+      - application/json
+      description: 创建员工
+      parameters:
+      - description: 员工信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/req.EmployeeCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 创建员工
+      tags:
+      - 员工
   /admin/employee/login:
     post:
       consumes:

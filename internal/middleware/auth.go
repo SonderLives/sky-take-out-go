@@ -2,14 +2,14 @@ package middleware
 
 import (
 	"fmt"
-	"strings"
-
 	"sky-take-out-go/internal/pkg/errcode"
 	"sky-take-out-go/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+const tokenHeader = "Token"
 
 type AuthMiddleware struct {
 	jwtSecret []byte
@@ -20,19 +20,19 @@ func NewAuthMiddleware(secret string) *AuthMiddleware {
 }
 
 func (m *AuthMiddleware) parseToken(c *gin.Context) (*CustomClaims, bool) {
-	authHeader := c.GetHeader("Authorization")
+	authHeader := c.GetHeader(tokenHeader)
 	if authHeader == "" {
 		response.Error(c, errcode.ErrUnauthorized())
 		c.Abort()
 		return nil, false
 	}
 
-	parts := strings.SplitN(authHeader, " ", 2)
-	if len(parts) != 2 || parts[0] != "Bearer" {
-		response.Error(c, errcode.ErrUnauthorized())
-		c.Abort()
-		return nil, false
-	}
+	//parts := strings.SplitN(authHeader, " ", 2)
+	//if len(parts) != 2 || parts[0] != "Bearer" {
+	//	response.Error(c, errcode.ErrUnauthorized())
+	//	c.Abort()
+	//	return nil, false
+	//}
 
 	if len(m.jwtSecret) == 0 {
 		response.Error(c, errcode.ErrUnauthorized())
@@ -40,7 +40,7 @@ func (m *AuthMiddleware) parseToken(c *gin.Context) (*CustomClaims, bool) {
 		return nil, false
 	}
 
-	token, err := jwt.ParseWithClaims(parts[1], &CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(authHeader, &CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
 		if t.Method != jwt.SigningMethodHS256 {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}

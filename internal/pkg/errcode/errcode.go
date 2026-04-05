@@ -31,11 +31,12 @@ const (
 	CodeInternal        = 10005
 	CodeTooManyRequests = 10006
 
-	CodeUserOrPassword  = 20001
-	CodeUserDisabled    = 20002
-	CodeAdminOrPassword = 20003
-	CodeAdminDisabled   = 20004
-	CodeAdminNotFound   = 20005
+	CodeUserOrPassword        = 20001
+	CodeUserDisabled          = 20002
+	CodeAdminOrPassword       = 20003
+	CodeAdminDisabled         = 20004
+	CodeAdminNotFound         = 20005
+	CodeUserNameAlreadyExists = 20006
 
 	CodeProductNotFound = 20101
 	CodeProductOffShelf = 20102
@@ -67,6 +68,10 @@ func ErrInternal() *AppError {
 
 func ErrTooManyRequests() *AppError {
 	return &AppError{Code: CodeTooManyRequests, Message: "请求过于频繁", httpStatus: 200}
+}
+
+func ErrUserNameAlreadyExists() *AppError {
+	return &AppError{Code: CodeUserNameAlreadyExists, Message: "用户名已存在", httpStatus: 200}
 }
 
 // 用户错误码 20001-20099

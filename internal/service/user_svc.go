@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"sky-take-out-go/internal/pkg/req"
 	"time"
 
 	"sky-take-out-go/internal/config"
@@ -26,6 +27,11 @@ type userService struct {
 	repo      repository.UserRepository
 	jwtSecret []byte
 	jwtExpire time.Duration
+}
+
+func (s *userService) Create(ctx context.Context, r *req.EmployeeCreateReq) (interface{}, interface{}) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func NewUserService(repo repository.UserRepository, cfg *config.Config) UserService {

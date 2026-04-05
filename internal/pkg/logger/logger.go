@@ -87,38 +87,38 @@ func Init(cfg *config.LogConfig) {
 			zapcore.AddSync(os.Stdout),
 			level,
 		))
-	}
 
-	// 文件输出：按级别分文件
-	if cfg.LogDir != "" {
-		newBufferedFileWriter := func(filename string) zapcore.WriteSyncer {
-			return &zapcore.BufferedWriteSyncer{WS: newFileWriter(filename)}
+		// 文件输出：按级别分文件（仅非 dev 模式）
+		if cfg.LogDir != "" {
+			newBufferedFileWriter := func(filename string) zapcore.WriteSyncer {
+				return &zapcore.BufferedWriteSyncer{WS: newFileWriter(filename)}
+			}
+
+			// app.log：所有级别
+			cores = append(cores, zapcore.NewCore(
+				zapcore.NewJSONEncoder(encoderCfg),
+				newBufferedFileWriter("app.log"),
+				level,
+			))
+
+			// warn.log：仅 Warn 级别
+			cores = append(cores, zapcore.NewCore(
+				zapcore.NewJSONEncoder(encoderCfg),
+				newBufferedFileWriter("warn.log"),
+				zap.LevelEnablerFunc(func(l zapcore.Level) bool {
+					return l == zapcore.WarnLevel
+				}),
+			))
+
+			// error.log：Error 及以上
+			cores = append(cores, zapcore.NewCore(
+				zapcore.NewJSONEncoder(encoderCfg),
+				newBufferedFileWriter("error.log"),
+				zap.LevelEnablerFunc(func(l zapcore.Level) bool {
+					return l >= zapcore.ErrorLevel
+				}),
+			))
 		}
-
-		// app.log：所有级别
-		cores = append(cores, zapcore.NewCore(
-			zapcore.NewJSONEncoder(encoderCfg),
-			newBufferedFileWriter("app.log"),
-			level,
-		))
-
-		// warn.log：仅 Warn 级别
-		cores = append(cores, zapcore.NewCore(
-			zapcore.NewJSONEncoder(encoderCfg),
-			newBufferedFileWriter("warn.log"),
-			zap.LevelEnablerFunc(func(l zapcore.Level) bool {
-				return l == zapcore.WarnLevel
-			}),
-		))
-
-		// error.log：Error 及以上
-		cores = append(cores, zapcore.NewCore(
-			zapcore.NewJSONEncoder(encoderCfg),
-			newBufferedFileWriter("error.log"),
-			zap.LevelEnablerFunc(func(l zapcore.Level) bool {
-				return l >= zapcore.ErrorLevel
-			}),
-		))
 	}
 
 	zapLog := zap.New(zapcore.NewTee(cores...), zap.AddCaller(), zap.AddCallerSkip(0))

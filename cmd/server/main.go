@@ -10,7 +10,7 @@ import (
 	"sky-take-out-go/internal/pkg/logger"
 )
 
-// @title           Take Out API
+// @title           苍穹外卖
 // @version         1.0
 func main() {
 	// 1. InitAll 函数初始化所有资源

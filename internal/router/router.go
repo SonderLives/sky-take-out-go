@@ -3,14 +3,13 @@ package router
 import (
 	"context"
 	"net/http"
-	"time"
-
 	"sky-take-out-go/internal/handler"
 	"sky-take-out-go/internal/middleware"
 	"sky-take-out-go/internal/pkg/response"
 	"sky-take-out-go/internal/router/admin"
 	"sky-take-out-go/internal/router/app"
 	"sky-take-out-go/internal/svc"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -30,23 +29,24 @@ func Setup(svcCtx *svc.ServiceContext, auth *middleware.AuthMiddleware) *gin.Eng
 	r.Use(middleware.CORS(svcCtx.Config.Server.CORSOrigins))
 
 	if svcCtx.Config.Server.Mode == "debug" {
+		// 1.swagger 文档
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+		// 2.健康检查：检测 MySQL 和 Redis 的真实连通性
+		r.GET("/health", func(c *gin.Context) {
+			ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
+			defer cancel()
+
+			if err := svcCtx.HealthCheck(ctx); err != nil {
+				c.JSON(http.StatusServiceUnavailable, response.Response{
+					Code:    -1,
+					Message: "unhealthy: " + err.Error(),
+				})
+				return
+			}
+			response.Success(c, gin.H{"status": "ok"})
+		})
 	}
-
-	// 健康检查：检测 MySQL 和 Redis 的真实连通性
-	r.GET("/health", func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
-		defer cancel()
-
-		if err := svcCtx.HealthCheck(ctx); err != nil {
-			c.JSON(http.StatusServiceUnavailable, response.Response{
-				Code:    -1,
-				Message: "unhealthy: " + err.Error(),
-			})
-			return
-		}
-		response.Success(c, gin.H{"status": "ok"})
-	})
 
 	// 创建 handler（从 ServiceContext 获取依赖）
 	productHandler := handler.NewProductHandler(svcCtx.ProductSvc, svcCtx.MQPublisher)
@@ -66,15 +66,11 @@ func Setup(svcCtx *svc.ServiceContext, auth *middleware.AuthMiddleware) *gin.Eng
 	appAuth.Use(auth.AppAuth())
 	// 后续扩展 App 需认证的接口
 
-	// 管理后台接口
-	adminGroup := r.Group("/admin/")
-	admin.RegisterAuthRoutes(adminGroup, employeeHandler)
+	// 员工管理后台接口
+	employeeGroup := r.Group("/admin/employee")
+	admin.RegisterEmployeeRoutes(employeeGroup, auth, employeeHandler)
 
-	// 管理后台全部需认证
-	adminAuth := adminGroup.Group("")
-	adminAuth.Use(auth.AdminAuth())
-
-	admin.RegisterProductRoutes(adminAuth, svcCtx.RateLimiter, productHandler)
+	//admin.RegisterProductRoutes(adminAuth, svcCtx.RateLimiter, productHandler)
 
 	return r
 }

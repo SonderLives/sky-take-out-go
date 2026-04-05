@@ -41,10 +41,12 @@ func Init() {
 
 		zhTrans, _ := uni.GetTranslator("zh")
 		_ = zh_translations.RegisterDefaultTranslations(v, zhTrans)
+		registerRegexpValidation(v, zhTrans, "{0}格式不正确")
 		translators[i18n.LangZhCN] = zhTrans
 
 		enTrans, _ := uni.GetTranslator("en")
 		_ = en_translations.RegisterDefaultTranslations(v, enTrans)
+		registerRegexpValidation(v, enTrans, "{0} has an invalid format")
 		translators[i18n.LangEnUS] = enTrans
 	}
 }
