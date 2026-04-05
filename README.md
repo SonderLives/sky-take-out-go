@@ -52,8 +52,8 @@
 ### Run
 
 ```bash
-git clone https://github.com/your-username/goflow.git
-cd goflow
+git clone https://github.com/your-username/sky-take-out-go.git
+cd sky-take-out-go
 
 go mod tidy
 make run
