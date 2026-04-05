@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sky-take-out-go/internal/handler"
 	"sky-take-out-go/internal/middleware"
+	"sky-take-out-go/internal/pkg/logger"
 	"sky-take-out-go/internal/pkg/response"
 	"sky-take-out-go/internal/router/admin"
 	"sky-take-out-go/internal/router/app"
@@ -38,6 +39,7 @@ func Setup(svcCtx *svc.ServiceContext, auth *middleware.AuthMiddleware) *gin.Eng
 			defer cancel()
 
 			if err := svcCtx.HealthCheck(ctx); err != nil {
+				logger.WithCtx(c.Request.Context()).Warnw("health check failed", "error", err)
 				c.JSON(http.StatusServiceUnavailable, response.Response{
 					Code:    -1,
 					Message: "unhealthy: " + err.Error(),

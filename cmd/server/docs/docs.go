@@ -17,7 +17,12 @@ const docTemplate = `{
     "paths": {
         "/admin/employee": {
             "post": {
-                "description": "创建员工",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "创建员工（需管理员权限）",
                 "consumes": [
                     "application/json"
                 ],
@@ -42,6 +47,24 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "创建成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -77,6 +100,128 @@ const docTemplate = `{
                     "200": {
                         "description": "登录成功",
                         "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.EmployeeLoginResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/page": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "分页查询员工（需管理员权限）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "员工"
+                ],
+                "summary": "分页查询员工",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "\"张三\"",
+                        "description": "员工姓名",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "查询成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/response.PageResult"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "records": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/response.EmployeePageItemDTO"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     }
@@ -88,7 +233,6 @@ const docTemplate = `{
         "req.EmployeeCreateReq": {
             "type": "object",
             "required": [
-                "id",
                 "idNumber",
                 "name",
                 "phone",
@@ -102,7 +246,7 @@ const docTemplate = `{
                     "example": 1
                 },
                 "idNumber": {
-                    "description": "身份证号：必填 + 18位 + 基础正则（支持末尾X/x）",
+                    "description": "身份证号：必填 + 18位 + 基础正则（支持末尾X/x）\n正则转化： 0x7C -\u003e |  0x2C -\u003e ,",
                     "type": "string",
                     "example": "110105199003078888"
                 },
@@ -118,10 +262,6 @@ const docTemplate = `{
                 "sex": {
                     "description": "性别：限制枚举值",
                     "type": "string",
-                    "enum": [
-                        "男",
-                        "女"
-                    ],
                     "example": "男"
                 },
                 "username": {
@@ -148,6 +288,91 @@ const docTemplate = `{
                 }
             }
         },
+        "response.EmployeeLoginResult": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "管理员"
+                },
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                "userName": {
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
+        "response.EmployeePageItemDTO": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "type": "string",
+                    "example": "2026-04-06 21:30:00"
+                },
+                "createUser": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "idNumber": {
+                    "type": "string",
+                    "example": "110105********8888"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "管理员"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "sex": {
+                    "type": "string",
+                    "example": "男"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "updateTime": {
+                    "type": "string",
+                    "example": "2026-04-06 21:30:00"
+                },
+                "updateUser": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "username": {
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
+        "response.PageResult": {
+            "type": "object",
+            "properties": {
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 120
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {
@@ -167,6 +392,13 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Token",
+            "in": "header"
+        }
     }
 }`
 
@@ -174,10 +406,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
+	BasePath:         "/",
+	Schemes:          []string{"http"},
 	Title:            "苍穹外卖",
-	Description:      "",
+	Description:      "苍穹外卖后端 API 文档",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

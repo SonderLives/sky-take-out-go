@@ -67,20 +67,16 @@ func ErrorWithMsg(c *gin.Context, httpStatus int, code int, msg string) {
 	})
 }
 
-// PageData 分页数据
-type PageData struct {
-	List  any   `json:"list" swaggertype:"array,object"`
-	Total int64 `json:"total" example:"120"`
-	Page  int   `json:"page" example:"1"`
-	Size  int   `json:"size" example:"10"`
+// PageResult 分页数据
+type PageResult struct {
+	Records any   `json:"records" swaggertype:"array,object"`
+	Total   int64 `json:"total" example:"120"`
 }
 
 // SuccessWithPage 分页成功响应
-func SuccessWithPage(c *gin.Context, list any, total int64, page, size int) {
-	Success(c, PageData{
-		List:  list,
-		Total: total,
-		Page:  page,
-		Size:  size,
+func SuccessWithPage(c *gin.Context, records any, total int64, page, size int) {
+	Success(c, PageResult{
+		Records: records,
+		Total:   total,
 	})
 }

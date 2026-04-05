@@ -10,6 +10,10 @@ import (
 func RegisterEmployeeRoutes(rg *gin.RouterGroup, auth *middleware.AuthMiddleware, h *handler.EmployeeHandler) {
 	rg.POST("/login", h.Login)
 	// 管理后台全部需认证
-	rg.Use(auth.AdminAuth()).POST("", h.Create)
-	//rg.POST("", h.Create)
+	rga := rg.Use(auth.AdminAuth())
+	{
+		rga.POST("", h.Create)
+		rga.GET("/page", h.PageQuery)
+		rga.GET("/status/:status", h.SetStatus)
+	}
 }

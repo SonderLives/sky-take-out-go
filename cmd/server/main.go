@@ -12,6 +12,12 @@ import (
 
 // @title           苍穹外卖
 // @version         1.0
+// @description     苍穹外卖后端 API 文档
+// @BasePath        /
+// @schemes         http
+// @securityDefinitions.apikey BearerAuth
+// @in              header
+// @name            Token
 func main() {
 	// 1. InitAll 函数初始化所有资源
 	cfg, db, rdb, mqPublisher, _, r, mqRouter, err := InitAll()

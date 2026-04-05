@@ -12,7 +12,7 @@ type EmployeeCreateReq struct {
 	ID int `json:"id" label:"ID" example:"1"`
 
 	// 身份证号：必填 + 18位 + 基础正则（支持末尾X/x）
-	// 正则支持 0x7C -> | 正则支持 0x2C -> ,
+	// 正则转化： 0x7C -> |  0x2C -> ,
 	IDNumber string `json:"idNumber" binding:"required,len=18,regexp=^[1-9]\\d{5}(180x7C190x7C20)\\d{2}(0[1-9]0x7C1[0-2])(0[1-9]0x7C[12]\\d0x7C3[01])\\d{3}[\\dXx]$" label:"身份证号" example:"110105199003078888"`
 
 	Name string `json:"name" binding:"required" label:"姓名" example:"张三"`
@@ -24,4 +24,10 @@ type EmployeeCreateReq struct {
 	Sex string `json:"sex" binding:"required" label:"性别" example:"男"`
 	// 用户名：必填，唯一
 	Username string `json:"username" binding:"required" label:"用户名" example:"admin"`
+}
+
+type EmployeePageReq struct {
+	Name     string `form:"name" label:"姓名" example:"张三"`
+	Page     int    `form:"page" binding:"required,min=1" label:"页码" example:"1"`
+	PageSize int    `form:"pageSize" binding:"required,min=1" label:"每页数量" example:"10"`
 }
